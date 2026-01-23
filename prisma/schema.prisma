@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+//ENUM PART
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CreditStatus {
+  PENDING
+  PARTIAL
+  PAID
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  quantity  Int
+  unitPrice Float
+  minStock  Int
+  unit      String
+  createdAt DateTime @default(now())
+
+  sales     Sale[]
+  purchases Purchase[]
+  invoiceItems InvoiceItem[]
+
+  @@index([name])
+  @@index([category])
+}
+
+model Sale {
+  id          String   @id @default(uuid())
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Float
+  total       Float
+  clientName  String?
+  date        DateTime
+  isPaid      Boolean
+
+  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([date])
+  @@index([clientName])
+}
+
+model Purchase {
+  id          String   @id @default(uuid())
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Float
+  total       Float
+  supplierName String
+  date        DateTime
+  isPaid      Boolean
+
+  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([date])
+  @@index([supplierName])
+}
+
+model Credit {
+  id              String   @id @default(uuid())
+  clientName      String
+  amount          Float
+  remainingAmount Float
+  description     String
+  date            DateTime
+  dueDate         DateTime
+  status          CreditStatus
+
+  @@index([clientName])
+  @@index([status])
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique
+  clientName    String
+  subtotal      Float
+  tax           Float
+  total         Float
+  date          DateTime
+  status        InvoiceStatus
+
+  items         InvoiceItem[]
+
+  @@index([invoiceNumber])
+  @@index([clientName])
+}
+
+model InvoiceItem {
+  id        String @id @default(uuid())
+  invoiceId String
+  productId String
+
+  productName String
+  quantity    Int
+  unitPrice   Float
+  total       Float
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+  @@index([productId])
+}
