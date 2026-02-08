@@ -20,6 +20,7 @@ export class CreateCreditDto {
   @IsString()
   dueDate: string;
 
+  
   @IsEnum(CreditStatus)
   status: CreditStatus;
 }
