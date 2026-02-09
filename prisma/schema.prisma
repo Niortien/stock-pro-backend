@@ -58,7 +58,7 @@ model Product {
 
 model Sale {
   id          String   @id @default(uuid())
-  productId   String
+  productId   String?
   productName String
   quantity    Int
   unitPrice   Float
@@ -67,7 +67,7 @@ model Sale {
   date        DateTime
   isPaid      Boolean
 
-  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@index([date])
   @@index([clientName])
@@ -75,7 +75,7 @@ model Sale {
 
 model Purchase {
   id          String   @id @default(uuid())
-  productId   String
+  productId   String?
   productName String
   quantity    Int
   unitPrice   Float
@@ -84,7 +84,7 @@ model Purchase {
   date        DateTime
   isPaid      Boolean
 
-  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@index([date])
   @@index([supplierName])
@@ -123,7 +123,7 @@ model Invoice {
 model InvoiceItem {
   id        String @id @default(uuid())
   invoiceId String
-  productId String
+  productId String?
 
   productName String
   quantity    Int
@@ -131,7 +131,7 @@ model InvoiceItem {
   total       Float
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@index([productId])
