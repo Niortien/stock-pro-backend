@@ -3,14 +3,14 @@ import { AppModule } from '../src/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-let server: any;
+let app: any;
 
 async function bootstrap() {
-  if (!server) {
-    const app = await NestFactory.create(AppModule, { logger: ['error', 'warn'] });
+  if (!app) {
+    const nestApp = await NestFactory.create(AppModule, { logger: ['error', 'warn'] });
 
     // Validation globale pour DTOs
-    app.useGlobalPipes(
+    nestApp.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -18,13 +18,13 @@ async function bootstrap() {
       }),
     );
 
-    await app.init();
+    await nestApp.init();
     
     // Get the underlying Express instance
-    const expressApp = app.getHttpAdapter().getInstance();
-    server = expressApp;
+    const expressApp = nestApp.getHttpAdapter().getInstance();
+    app = expressApp;
   }
-  return server;
+  return app;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
