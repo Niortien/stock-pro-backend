@@ -7,10 +7,6 @@ export class PrismaService extends PrismaClient
 
   async onModuleInit(): Promise<void> {
     try {
-      if (!this.$connect) {
-        console.log('Prisma client already connected');
-        return;
-      }
       await this.$connect();
       console.log('Prisma connected successfully');
     } catch (error) {
