@@ -58,7 +58,7 @@ model Product {
 
 model Sale {
   id          String   @id @default(uuid())
-  productId   String?
+  productId   String
   productName String
   quantity    Int
   unitPrice   Float
@@ -67,7 +67,7 @@ model Sale {
   date        DateTime
   isPaid      Boolean
 
-  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  product     Product @relation(fields: [productId], references: [id])
 
   @@index([date])
   @@index([clientName])

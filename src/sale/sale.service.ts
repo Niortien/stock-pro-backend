@@ -28,7 +28,9 @@ export class SaleService {
 
   async findAll() {
     return this.prisma.sale.findMany({
-      include: { product: true },
+      include: { 
+        product: true
+      },
       orderBy: { date: "desc" },
     });
   }
@@ -36,7 +38,9 @@ export class SaleService {
   async findOne(id: string) {
     const sale = await this.prisma.sale.findUnique({
       where: { id },
-      include: { product: true },
+      include: { 
+        product: true
+      },
     });
 
     if (!sale) throw new NotFoundException("Sale not found");
